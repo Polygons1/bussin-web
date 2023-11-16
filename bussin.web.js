@@ -24004,7 +24004,7 @@ function createGlobalEnv() {
   env.declareVar("null", MK_NULL(), true);
   env.declareVar("error", MK_NULL(), false);
   env.declareVar("println", MK_NATIVE_FN((args) => {
-    return MK_STRING(args[0].value);
+    return MK_STRING("PRINT" + args[0].value);
   }), true);
   env.declareVar("math", MK_OBJECT(new Map().set("pi", Math.PI).set("sqrt", MK_NATIVE_FN((args) => {
     const arg = args[0].value;
@@ -24336,13 +24336,28 @@ async function send(expression) {
   const input = expression;
   const program = parser2.produceAST(input);
   const result = evaluate(program, env);
-  return typeof result === "object" ? result.value : result;
+  if (typeof result === "object") {
+    if (result.type === "string" && !result.value.startsWith("PRINT")) {
+      return `'${result.value}'`;
+    } else if (result.type === "string") {
+      return result.value.replace("PRINT", "");
+    }
+    if (result.type === "number") {
+      return result.value;
+    } else if (result.type === "boolean") {
+      return result.value;
+    } else {
+      return null;
+    }
+  } else {
+    return result;
+  }
 }
 var bussin_default = { send };
 
 // app.jsx
 var jsx_dev_runtime = __toESM(require_jsx_dev_runtime(), 1);
-var Error2 = function({ err }) {
+var Error2 = function(err) {
   return jsx_dev_runtime.jsxDEV("div", {
     id: "error",
     children: jsx_dev_runtime.jsxDEV("div", {
@@ -24355,25 +24370,44 @@ var Error2 = function({ err }) {
 var App = function() {
   const [expression, setExpression] = import_react.useState("");
   const [expressions3, setExpressions] = import_react.useState([]);
+  const [pExpr, setPxpr] = import_react.useState("");
   async function sendExpression() {
+    const exp = expression.replace(/\$([0-9]+)/g, (match, index) => expressions3[index - 1][1]);
     try {
-      setExpressions([...expressions3, [expression, await bussin_default.send(expression)]]);
+      setExpressions([...expressions3, [expression, await bussin_default.send(exp)]]);
     } catch (e) {
-      setExpressions([...expressions3, [expression, jsx_dev_runtime.jsxDEV(Error2, {
-        err: e
-      }, undefined, false, undefined, this)]]);
+      setExpressions([...expressions3, [expression, Error2(e)]]);
     }
     setExpression("");
   }
   function kd({ key }) {
-    if (key === "Enter") {
-      sendExpression();
-    } else if (key === "Backspace") {
-      setExpression(expression.slice(0, -1));
-    } else if (key === "Shift") {
-      return;
+    try {
+      if (key === "Enter") {
+        sendExpression();
+      } else if (key === "Backspace") {
+        setExpression(expression.slice(0, -1));
+      } else if (key === "Shift") {
+        return;
+      } else {
+        setExpression(expression + key);
+        setPxpr(expression + key);
+      }
+    } catch (e) {
+    }
+  }
+  function getColor(value) {
+    if (typeof value === "boolean") {
+      return "boolean";
+    } else if (typeof value === "number") {
+      return "number";
+    } else if (typeof value === "string") {
+      if (value.startsWith("'") && value.endsWith("'")) {
+        return "string";
+      } else {
+        return null;
+      }
     } else {
-      setExpression(expression + key);
+      return null;
     }
   }
   window.onkeydown = kd;
@@ -24384,15 +24418,17 @@ var App = function() {
         "Web Repl v1.0 (Bussin)",
         jsx_dev_runtime.jsxDEV("br", {}, undefined, false, undefined, this),
         expressions3.map((value, index) => jsx_dev_runtime.jsxDEV("div", {
-          id: "expression",
+          id: `expression-${index}`,
           children: [
             jsx_dev_runtime.jsxDEV("br", {}, undefined, false, undefined, this),
             ">",
             " ",
             value[0],
             jsx_dev_runtime.jsxDEV("br", {}, undefined, false, undefined, this),
-            value[1],
-            jsx_dev_runtime.jsxDEV("br", {}, undefined, false, undefined, this)
+            jsx_dev_runtime.jsxDEV("div", {
+              className: getColor(value[1]),
+              children: String(value[1])
+            }, undefined, false, undefined, this)
           ]
         }, index, true, undefined, this)),
         jsx_dev_runtime.jsxDEV("br", {}, undefined, false, undefined, this),
