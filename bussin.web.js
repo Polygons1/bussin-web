@@ -23976,42 +23976,6 @@ class Parser {
   }
 }
 
-// bussin/runtime/eval/native-fns.ts
-function printValues(args) {
-  for (let i = 0;i < args.length; i++) {
-    const arg = args[i];
-    console.log(matchType(arg));
-  }
-}
-function matchType(arg) {
-  switch (arg.type) {
-    case "string":
-      return arg.value;
-    case "number":
-      return arg.value;
-    case "boolean":
-      return arg.value;
-    case "null":
-      return arg.value;
-    case "object":
-      let obj = {};
-      const aObj = arg;
-      aObj.properties.forEach((value, key) => {
-        obj[key] = matchType(value);
-      });
-      return obj;
-    case "fn":
-      const fn = arg;
-      return {
-        name: fn.name,
-        body: fn.body,
-        internal: false
-      };
-    default:
-      return arg;
-  }
-}
-
 // bussin/runtime/values.ts
 function MK_NATIVE_FN(call) {
   return { type: "native-fn", call };
@@ -24040,8 +24004,7 @@ function createGlobalEnv() {
   env.declareVar("null", MK_NULL(), true);
   env.declareVar("error", MK_NULL(), false);
   env.declareVar("println", MK_NATIVE_FN((args) => {
-    printValues(args);
-    return MK_NULL();
+    return MK_STRING(args[0].value);
   }), true);
   env.declareVar("math", MK_OBJECT(new Map().set("pi", Math.PI).set("sqrt", MK_NATIVE_FN((args) => {
     const arg = args[0].value;
@@ -24373,17 +24336,34 @@ async function send(expression) {
   const input = expression;
   const program = parser2.produceAST(input);
   const result = evaluate(program, env);
-  return result;
+  return typeof result === "object" ? result.value : result;
 }
 var bussin_default = { send };
 
 // app.jsx
 var jsx_dev_runtime = __toESM(require_jsx_dev_runtime(), 1);
+var Error2 = function({ err }) {
+  return jsx_dev_runtime.jsxDEV("div", {
+    id: "error",
+    children: jsx_dev_runtime.jsxDEV("div", {
+      id: "message",
+      style: { color: "red" },
+      children: err
+    }, undefined, false, undefined, this)
+  }, undefined, false, undefined, this);
+};
 var App = function() {
   const [expression, setExpression] = import_react.useState("");
   const [expressions3, setExpressions] = import_react.useState([]);
   async function sendExpression() {
-    setExpressions([...expressions3, [expression, await bussin_default.send(expression)]]);
+    try {
+      setExpressions([...expressions3, [expression, await bussin_default.send(expression)]]);
+    } catch (e) {
+      setExpressions([...expressions3, [expression, jsx_dev_runtime.jsxDEV(Error2, {
+        err: e
+      }, undefined, false, undefined, this)]]);
+    }
+    setExpression("");
   }
   function kd({ key }) {
     if (key === "Enter") {
@@ -24401,10 +24381,19 @@ var App = function() {
     children: jsx_dev_runtime.jsxDEV("div", {
       id: "main",
       children: [
-        expressions3.map((value, index) => {
-          value[0], value[1];
-        }),
+        expressions3.map((value, index) => jsx_dev_runtime.jsxDEV("div", {
+          id: "expression",
+          children: [
+            ">",
+            " ",
+            value[0],
+            jsx_dev_runtime.jsxDEV("br", {}, undefined, false, undefined, this),
+            value[1],
+            jsx_dev_runtime.jsxDEV("br", {}, undefined, false, undefined, this)
+          ]
+        }, index, true, undefined, this)),
         jsx_dev_runtime.jsxDEV("br", {}, undefined, false, undefined, this),
+        "> ",
         expression
       ]
     }, undefined, true, undefined, this)
