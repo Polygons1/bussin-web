@@ -24346,8 +24346,10 @@ async function send(expression) {
       return result.value;
     } else if (result.type === "boolean") {
       return result.value;
+    } else if (result.type === "native-fn") {
+      return "native-fn";
     } else {
-      return null;
+      return result.value;
     }
   } else {
     return result;
@@ -24357,26 +24359,16 @@ var bussin_default = { send };
 
 // app.jsx
 var jsx_dev_runtime = __toESM(require_jsx_dev_runtime(), 1);
-var Error2 = function(err) {
-  return jsx_dev_runtime.jsxDEV("div", {
-    id: "error",
-    children: jsx_dev_runtime.jsxDEV("div", {
-      id: "message",
-      style: { color: "red" },
-      children: err
-    }, undefined, false, undefined, this)
-  }, undefined, false, undefined, this);
-};
 var App = function() {
   const [expression, setExpression] = import_react.useState("");
   const [expressions3, setExpressions] = import_react.useState([]);
   const [pExpr, setPxpr] = import_react.useState("");
   async function sendExpression() {
-    const exp = expression.replace(/\$([0-9]+)/g, (match, index) => expressions3[index - 1][1]);
+    const exp = expression.replace(/\$([0-9]+)/g, (match, index) => expressions3[index - 1][1]).replace(/\'{1,}/g, "");
     try {
       setExpressions([...expressions3, [expression, await bussin_default.send(exp)]]);
     } catch (e) {
-      setExpressions([...expressions3, [expression, Error2(e)]]);
+      setExpressions([...expressions3, [expression, "ERROR" + e]]);
     }
     setExpression("");
   }
@@ -24403,6 +24395,8 @@ var App = function() {
     } else if (typeof value === "string") {
       if (value.startsWith("'") && value.endsWith("'")) {
         return "string";
+      } else if (value.startsWith("ERROR")) {
+        return "err";
       } else {
         return null;
       }
@@ -24427,7 +24421,7 @@ var App = function() {
             jsx_dev_runtime.jsxDEV("br", {}, undefined, false, undefined, this),
             jsx_dev_runtime.jsxDEV("div", {
               className: getColor(value[1]),
-              children: String(value[1])
+              children: value[1] && String(value[1]).replace("ERROR", "")
             }, undefined, false, undefined, this)
           ]
         }, index, true, undefined, this)),
