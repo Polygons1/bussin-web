@@ -24381,9 +24381,12 @@ var App = function() {
     children: jsx_dev_runtime.jsxDEV("div", {
       id: "main",
       children: [
+        "Web Repl v1.0 (Bussin)",
+        jsx_dev_runtime.jsxDEV("br", {}, undefined, false, undefined, this),
         expressions3.map((value, index) => jsx_dev_runtime.jsxDEV("div", {
           id: "expression",
           children: [
+            jsx_dev_runtime.jsxDEV("br", {}, undefined, false, undefined, this),
             ">",
             " ",
             value[0],
