@@ -16,7 +16,6 @@ var __toESM = (mod, isNodeMode, target) => {
 };
 var __commonJS = (cb, mod) => () => (mod || cb((mod = { exports: {} }).exports, mod), mod.exports);
 
-Users/orisarfati/node_modules/react/cjs/react.development.js
 var require_react_development = __commonJS((exports, module) => {
   if (true) {
     (function() {
@@ -1800,7 +1799,6 @@ var require_react_development = __commonJS((exports, module) => {
   }
 });
 
-Users/orisarfati/node_modules/react/index.js
 var require_react = __commonJS((exports, module) => {
   var react_development = __toESM(require_react_development(), 1);
   if (false) {
@@ -1809,7 +1807,6 @@ var require_react = __commonJS((exports, module) => {
   }
 });
 
-Users/orisarfati/node_modules/scheduler/cjs/scheduler.development.js
 var require_scheduler_development = __commonJS((exports) => {
   if (true) {
     (function() {
@@ -2255,7 +2252,6 @@ var require_scheduler_development = __commonJS((exports) => {
   }
 });
 
-Users/orisarfati/node_modules/scheduler/index.js
 var require_scheduler = __commonJS((exports, module) => {
   var scheduler_development = __toESM(require_scheduler_development(), 1);
   if (false) {
@@ -2264,7 +2260,6 @@ var require_scheduler = __commonJS((exports, module) => {
   }
 });
 
-Users/orisarfati/node_modules/react-dom/cjs/react-dom.development.js
 var require_react_dom_development = __commonJS((exports) => {
   var React = __toESM(require_react(), 1);
   var Scheduler = __toESM(require_scheduler(), 1);
@@ -22574,7 +22569,6 @@ var require_react_dom_development = __commonJS((exports) => {
   }
 });
 
-Users/orisarfati/node_modules/react-dom/index.js
 var require_react_dom = __commonJS((exports, module) => {
   var react_dom_development = __toESM(require_react_dom_development(), 1);
   if (false) {
@@ -22583,7 +22577,6 @@ var require_react_dom = __commonJS((exports, module) => {
   }
 });
 
-Users/orisarfati/node_modules/react-dom/client.js
 var require_client = __commonJS((exports) => {
   var m = __toESM(require_react_dom(), 1);
   if (false) {
@@ -22609,7 +22602,6 @@ var require_client = __commonJS((exports) => {
   var i;
 });
 
-Users/orisarfati/node_modules/react/cjs/react-jsx-dev-runtime.development.js
 var require_react_jsx_dev_runtime_development = __commonJS((exports) => {
   var React = __toESM(require_react(), 1);
   if (true) {
@@ -23462,7 +23454,6 @@ var require_react_jsx_dev_runtime_development = __commonJS((exports) => {
   }
 });
 
-Users/orisarfati/node_modules/react/jsx-dev-runtime.js
 var require_jsx_dev_runtime = __commonJS((exports, module) => {
   var react_jsx_dev_runtime_development = __toESM(require_react_jsx_dev_runtime_development(), 1);
   if (false) {
@@ -23474,7 +23465,6 @@ var require_jsx_dev_runtime = __commonJS((exports, module) => {
 // index.js
 var client = __toESM(require_client(), 1);
 
-Users/orisarfati/code/NewElement.js
 var Element = function(type = "div", id = "root", parent = document.body) {
   const e = document.createElement(type);
   e.id = id;
@@ -24363,6 +24353,7 @@ var App = function() {
   const [expression, setExpression] = import_react.useState("");
   const [expressions3, setExpressions] = import_react.useState([]);
   const [pExpr, setPxpr] = import_react.useState("");
+  const [input, setInput] = import_react.useState(false);
   async function sendExpression() {
     const exp = expression.replace(/\$([0-9]+)/g, (match, index) => expressions3[index - 1][1]).replace(/\'{1,}/g, "");
     try {
@@ -24425,9 +24416,14 @@ var App = function() {
             }, undefined, false, undefined, this)
           ]
         }, index, true, undefined, this)),
-        jsx_dev_runtime.jsxDEV("br", {}, undefined, false, undefined, this),
-        "> ",
-        expression
+        jsx_dev_runtime.jsxDEV(jsx_dev_runtime.Fragment, {
+          children: [
+            jsx_dev_runtime.jsxDEV("br", {}, undefined, false, undefined, this),
+            "> ",
+            " ",
+            expression
+          ]
+        }, undefined, true, undefined, this)
       ]
     }, undefined, true, undefined, this)
   }, undefined, false, undefined, this);
